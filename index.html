@@ -1,1 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>小说解析阅读器</title>
+<style>
+body {
+    font-family: "Noto Serif SC", "Songti SC", "Georgia", serif;
+    margin: 0 auto;
+    padding: 24px 16px;
+    max-width: 680px;
+    background: #f5f5f5;
+    color: #222;
+    line-height: 1.8;
+    font-size: 20px;
+    -webkit-font-smoothing: antialiased;
+}
+#chapter {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+#fileInput {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 999;
+}
+.paragraph {
+    margin: 18px 0;
+    text-indent: 2em;
+    word-break: break-all;
+}
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1565c0;
+    margin: 32px 0 16px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
 
+<div id="chapter">未加载</div>
+<input type="file" id="fileInput" accept=".txt,.md">
+<div id="content"></div>
+
+<script>
+const chapterDisplay = document.getElementById('chapter');
+const fileInput = document.getElementById('fileInput');
+const content = document.getElementById('content');
+
+let parsed = [];
+let currentIndex = 0;
+const batchSize = 40;
+let currentChapter = '未加载';
+
+fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const text = e.target.result;
+        if (file.name.endsWith('.md')) {
+            parseMD(text);
+        } else {
+            parseTXT(text);
+        }
+        currentIndex = 0;
+        content.innerHTML = '';
+        loadBatch();
+    };
+    reader.readAsText(file, 'utf-8');
+});
+
+function parseMD(text) {
+    parsed = [];
+    currentChapter = '正文';
+    const lines = text.split(/\r?\n/);
+    lines.forEach(line => {
+        if (/^#+\s*/.test(line)) {
+            const title = line.replace(/^#+\s*/, '').trim() || '无标题';
+            parsed.push({ type: 'title', text: title, chapter: title });
+            currentChapter = title;
+        } else if (line.trim()) {
+            parsed.push({ type: 'text', text: line.trim(), chapter: currentChapter });
+        }
+    });
+}
+
+function parseTXT(text) {
+    parsed = [];
+    currentChapter = '正文';
+    const blocks = text.split(/\n\s*\n/);
+    blocks.forEach(block => {
+        const cleaned = block.trim().replace(/\n/g, ' ');
+        if (cleaned) {
+            parsed.push({ type: 'text', text: cleaned, chapter: '正文' });
+        }
+    });
+}
+
+function loadBatch() {
+    let count = 0;
+    while (currentIndex < parsed.length && count < batchSize) {
+        const item = parsed[currentIndex];
+        const div = document.createElement('div');
+        if (item.type === 'title') {
+            div.className = 'title';
+            div.textContent = item.text;
+            currentChapter = item.text;
+        } else {
+            div.className = 'paragraph';
+            div.textContent = item.text;
+        }
+        content.appendChild(div);
+        currentIndex++;
+        count++;
+    }
+    chapterDisplay.textContent = currentChapter;
+}
+
+window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 120) {
+        loadBatch();
+    }
+});
+</script>
+</body>
+</html>
