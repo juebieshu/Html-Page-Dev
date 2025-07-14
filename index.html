@@ -1,138 +1,72 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>小说解析阅读器</title>
+<meta charset="UTF-8">
+<title>TXT 小说处理工具</title>
 <style>
-body {
-    font-family: "Noto Serif SC", "Songti SC", "Georgia", serif;
-    margin: 0 auto;
-    padding: 24px 16px;
-    max-width: 680px;
-    background: #f5f5f5;
-    color: #222;
-    line-height: 1.8;
-    font-size: 20px;
-    -webkit-font-smoothing: antialiased;
-}
-#chapter {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    z-index: 999;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-#fileInput {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    z-index: 999;
-}
-.paragraph {
-    margin: 18px 0;
-    text-indent: 2em;
-    word-break: break-all;
-}
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #1565c0;
-    margin: 32px 0 16px;
-    text-align: center;
-}
+body { font-family: monospace; padding: 20px; background: #f9f9f9; }
+button, input { font-size: 16px; margin: 5px; }
+textarea { width: 100%; height: 500px; font-size: 16px; }
 </style>
 </head>
 <body>
-
-<div id="chapter">未加载</div>
-<input type="file" id="fileInput" accept=".txt,.md">
-<div id="content"></div>
+<h2>TXT 小说处理工具</h2>
+<input type="file" id="fileInput" accept=".txt">
+<button onclick="processFile()">处理文件</button>
+<button onclick="downloadFile()">下载处理后文件</button>
+<textarea id="output" placeholder="这里显示处理后的内容..."></textarea>
 
 <script>
-const chapterDisplay = document.getElementById('chapter');
-const fileInput = document.getElementById('fileInput');
-const content = document.getElementById('content');
+// 判断是否是章节标题
+function isChapter(line) {
+    const chapterKeywords = ['章','节','回'];
+    return line.startsWith('第') && chapterKeywords.some(k => line.includes(k));
+}
 
-let parsed = [];
-let currentIndex = 0;
-const batchSize = 40;
-let currentChapter = '未加载';
-
-fileInput.addEventListener('change', () => {
-    const file = fileInput.files[0];
-    if (!file) return;
+function processFile() {
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files.length) {
+        alert("请先选择一个 TXT 文件");
+        return;
+    }
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = function(e) {
         const text = e.target.result;
-        if (file.name.endsWith('.md')) {
-            parseMD(text);
-        } else {
-            parseTXT(text);
+        const lines = text.split(/\r?\n/);
+        let output = '';
+        let isFirstLine = true;
+        for (let line of lines) {
+            line = line.trim();
+            if (line === '') continue; // 跳过空行
+
+            if (isFirstLine) {
+                line = '　　' + line; // 首行缩进两个全角空格
+                isFirstLine = false;
+            }
+
+            output += line + '\n';
+            if (!isChapter(line)) {
+                output += '\n'; // 非章节名加空行
+            }
         }
-        currentIndex = 0;
-        content.innerHTML = '';
-        loadBatch();
+        document.getElementById('output').value = output;
     };
-    reader.readAsText(file, 'utf-8');
-});
-
-function parseMD(text) {
-    parsed = [];
-    currentChapter = '正文';
-    const lines = text.split(/\r?\n/);
-    lines.forEach(line => {
-        if (/^#+\s*/.test(line)) {
-            const title = line.replace(/^#+\s*/, '').trim() || '无标题';
-            parsed.push({ type: 'title', text: title, chapter: title });
-            currentChapter = title;
-        } else if (line.trim()) {
-            parsed.push({ type: 'text', text: line.trim(), chapter: currentChapter });
-        }
-    });
+    reader.readAsText(fileInput.files[0], 'utf-8');
 }
 
-function parseTXT(text) {
-    parsed = [];
-    currentChapter = '正文';
-    const blocks = text.split(/\n\s*\n/);
-    blocks.forEach(block => {
-        const cleaned = block.trim().replace(/\n/g, ' ');
-        if (cleaned) {
-            parsed.push({ type: 'text', text: cleaned, chapter: '正文' });
-        }
-    });
-}
-
-function loadBatch() {
-    let count = 0;
-    while (currentIndex < parsed.length && count < batchSize) {
-        const item = parsed[currentIndex];
-        const div = document.createElement('div');
-        if (item.type === 'title') {
-            div.className = 'title';
-            div.textContent = item.text;
-            currentChapter = item.text;
-        } else {
-            div.className = 'paragraph';
-            div.textContent = item.text;
-        }
-        content.appendChild(div);
-        currentIndex++;
-        count++;
+function downloadFile() {
+    const text = document.getElementById('output').value;
+    if (!text) {
+        alert("没有可下载的内容，请先处理文件");
+        return;
     }
-    chapterDisplay.textContent = currentChapter;
+    const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "processed_novel.txt";
+    link.click();
+    URL.revokeObjectURL(link.href);
 }
-
-window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 120) {
-        loadBatch();
-    }
-});
 </script>
 </body>
 </html>
