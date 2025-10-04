@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LDesignOS — 自研操作系统 · 简洁 · 安全 · 高效</title>
 
-  <!-- ✅ 引入 TailwindCSS v4 CDN -->
-  <script src="https://cdn.tailwindcss.com/4.0.0"></script>
+  <!-- ✅ 使用你提供的 Tailwind v4 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-  <!-- 自定义主题配置（通过 CDN 的 tailwind.config） -->
+  <!-- 自定义 Tailwind 主题 -->
   <script>
     tailwind.config = {
       theme: {
@@ -19,7 +19,7 @@
             accent: '#4dd0ff',
           },
           fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
           },
         },
       },
@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <!-- 渐变光效背景 -->
+    <!-- 背景光效 -->
     <div class="absolute inset-0 w-full h-full">
       <div class="absolute -top-20 -left-20 w-72 h-72 bg-cyan-200 opacity-30 rounded-full blur-3xl"></div>
       <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-blue-200 opacity-20 rounded-full blur-3xl"></div>
@@ -93,35 +93,26 @@
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-blue-700">关于 LDesignOS</h2>
         <p class="mt-4 text-gray-600 text-lg leading-relaxed mx-auto max-w-2xl">
-          LDesignOS 是一个由团队完全自主研发的操作系统，面向桌面与轻量级嵌入式设备，
-          致力于为用户提供极简设计、模块化内核与隐私优先的使用体验。
+          LDesignOS 是一个完全自研的操作系统，面向桌面与轻量级设备，专注安全、简约与性能。
         </p>
       </div>
 
       <div id="features" class="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div class="p-6 bg-blue-50 rounded-2xl hover:shadow-xl transition">
           <h3 class="text-xl font-semibold text-blue-600">模块化内核</h3>
-          <p class="mt-3 text-gray-600">
-            内核结构被拆分为多个可选模块，根据硬件资源按需加载，降低系统负担并增强安全性。
-          </p>
+          <p class="mt-3 text-gray-600">根据硬件资源按需加载，降低系统负担并增强安全性。</p>
         </div>
         <div class="p-6 bg-cyan-50 rounded-2xl hover:shadow-xl transition">
           <h3 class="text-xl font-semibold text-blue-600">隐私优先</h3>
-          <p class="mt-3 text-gray-600">
-            默认关闭非必要数据采集，提供细粒度隐私控制，让用户掌控自己的数据。
-          </p>
+          <p class="mt-3 text-gray-600">默认关闭非必要数据采集，让用户掌控自己的数据。</p>
         </div>
         <div class="p-6 bg-blue-50 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold text-blue-600">现代 UI 体验</h3>
-          <p class="mt-3 text-gray-600">
-            界面设计追求简洁与一致，含有响应式布局、动效与暗色主题支持。
-          </p>
+          <h3 class="text-xl font-semibold text-blue-600">现代 UI</h3>
+          <p class="mt-3 text-gray-600">极简设计、动效与暗色模式支持，适配多平台。</p>
         </div>
         <div class="p-6 bg-cyan-50 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold text-blue-600">开发者生态友好</h3>
-          <p class="mt-3 text-gray-600">
-            内置包管理系统、SDK 文档与容器支持，方便上手与扩展。
-          </p>
+          <h3 class="text-xl font-semibold text-blue-600">开发者友好</h3>
+          <p class="mt-3 text-gray-600">自带包管理、SDK 文档和容器支持，轻松构建应用。</p>
         </div>
       </div>
     </section>
@@ -131,11 +122,14 @@
   <footer id="contact" class="mt-20 py-12 bg-white border-t">
     <div class="max-w-6xl mx-auto px-6 text-center space-y-4">
       <p class="text-gray-600">© <span id="year"></span> LDesignOS 团队 · 保留所有权利</p>
-      <p class="text-gray-600">
-        <a href="#" class="hover:text-blue-600">隐私政策</a>
-        <span class="mx-2">·</span>
-        <a href="#" class="hover:text-blue-600">联系我们</a>
-      </p>
+
+      <!-- 新增底部外部链接 -->
+      <div class="flex justify-center space-x-6 pt-4">
+        <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition">GitHub</a>
+        <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition">文档中心</a>
+        <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition">开发者社区</a>
+        <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition">下载镜像</a>
+      </div>
     </div>
   </footer>
 
