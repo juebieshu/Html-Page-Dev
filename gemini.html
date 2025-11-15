@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书应用UI重构示例</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Inter字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 自定义Tailwind配置 */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
+                    },
+                    colors: {
+                        'brand-accent': '#007AFF', // 点缀色 (科技蓝)
+                        'brand-text': '#1A1A1A', // 主文本
+                        'brand-secondary': '#6C757D', // 辅助文本
+                        'brand-bg': '#F8F9FA', // 极浅的灰色背景
+                    }
+                }
+            }
+        }
+
+        /* 隐藏水平滚动条 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-brand-bg font-sans text-brand-text">
+
+    <!-- 
+      设备外壳 (可选, 增加APP沉浸感)
+      在实际APP中, 顶部和底部的导航栏会是原生的
+    -->
+    <div class="max-w-md mx-auto min-h-screen shadow-2xl bg-white">
+
+        <!-- 
+          重构A部分: 顶部导航区
+          包含: 1. 主分类Tab (横滑)  2. 功能入口 (固定)
+        -->
+        <header class="sticky top-0 bg-white shadow-sm z-10">
+            <!-- 1. 主分类Tab (替换旧1区) -->
+            <nav class="flex space-x-4 p-4 overflow-x-auto no-scrollbar border-b border-gray-200">
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-accent border-b-2 border-brand-accent pb-1">推荐</a>
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-secondary">言情</a>
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-secondary">玄幻</a>
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-secondary">都市</a>
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-secondary">悬疑</a>
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-secondary">科幻</a>
+                <a href="#" class="flex-shrink-0 text-lg font-semibold text-brand-secondary">历史</a>
+            </nav>
+            
+            <!-- 2. 功能入口 (替换旧2区) -->
+            <div class="grid grid-cols-3 gap-2 px-4 py-3 text-center">
+                <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                    <!-- Icon: 排行榜 -->
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6m6 0v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>
+                    <span class="text-xs font-medium">排行榜</span>
+                </a>
+                <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                    <!-- Icon: 分类 -->
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-xs font-medium">分类</span>
+                </a>
+                <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                    <!-- Icon: 完结 -->
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-xs font-medium">完结</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- 
+          重构B部分: 核心内容区
+          使用标准化的组件
+        -->
+        <main class="pb-24 bg-brand-bg">
+            
+            <!-- 通知栏 (旧3区, 样式简化) -->
+            <div class="p-3 bg-white m-4 rounded-lg shadow-sm flex items-center space-x-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    公告
+                </span>
+                <span class="text-sm text-brand-secondary truncate">《XX之书》版权改编已启动！</span>
+            </div>
+
+            <!-- 组件1: 横滑封面组件 (替换旧4区 - VIP金榜) -->
+            <section class="py-4 bg-white">
+                <div class="flex justify-between items-center px-4 mb-3">
+                    <h2 class="text-xl font-bold text-brand-text">VIP金榜</h2>
+                    <a href="#" class="text-sm font-medium text-brand-accent">查看更多 &gt;</a>
+                </div>
+                <div class="flex space-x-4 px-4 overflow-x-auto no-scrollbar">
+                    <!-- 列表项 -->
+                    <a href="#" class="flex-shrink-0 w-28">
+                        <img src="https://placehold.co/300x400/007AFF/FFFFFF?text=书封1" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-md mb-2">
+                        <h3 class="font-semibold text-brand-text truncate">书名在这里</h3>
+                        <p class="text-xs text-brand-secondary truncate">作者名</p>
+                    </a>
+                    <a href="#" class="flex-shrink-0 w-28">
+                        <img src="https://placehold.co/300x400/6C757D/FFFFFF?text=书封2" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-md mb-2">
+                        <h3 class="font-semibold text-brand-text truncate">第二本书的名字</h3>
+                        <p class="text-xs text-brand-secondary truncate">另一个作者</p>
+                    </a>
+                    <a href="#" class="flex-shrink-0 w-28">
+                        <img src="https://placehold.co/300x400/FFA500/FFFFFF?text=书封3" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-md mb-2">
+                        <h3 class="font-semibold text-brand-text truncate">无限的旅程</h3>
+                        <p class="text-xs text-brand-secondary truncate">作者三号</p>
+                    </a>
+                    <a href="#" class="flex-shrink-0 w-28">
+                        <img src="https://placehold.co/300x400/1A1A1A/FFFFFF?text=书封4" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-md mb-2">
+                        <h3 class="font-semibold text-brand-text truncate">末日回响</h3>
+                        <p class="text-xs text-brand-secondary truncate">作者四号</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 组件3: 网格封面组件 (替换旧7区 - 封面推荐) -->
+            <section class="py-4 mt-4">
+                <div class="flex justify-between items-center px-4 mb-3">
+                    <h2 class="text-xl font-bold text-brand-text">封面推荐</h2>
+                    <a href="#" class="text-sm font-medium text-brand-accent">查看更多 &gt;</a>
+                </div>
+                <div class="grid grid-cols-3 gap-4 px-4">
+                    <!-- 列表项 -->
+                    <a href="#">
+                        <img src="https://placehold.co/300x400/F0F0F0/000000?text=推荐1" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-sm mb-2">
+                        <h3 class="font-medium text-sm text-brand-text truncate">都市奇谭</h3>
+                    </a>
+                    <a href="#">
+                        <img src="https://placehold.co/300x400/F0F0F0/000000?text=推荐2" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-sm mb-2">
+                        <h3 class="font-medium text-sm text-brand-text truncate">仙路漫漫</h3>
+                    </a>
+                    <a href="#">
+                        <img src="https://placehold.co/300x400/F0F0F0/000000?text=推荐3" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-sm mb-2">
+                        <h3 class="font-medium text-sm text-brand-text truncate">历史的尘埃</h3>
+                    </a>
+                    <a href="#">
+                        <img src="https://placehold.co/300x400/F0F0F0/000000?text=推荐4" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-sm mb-2">
+                        <h3 class="font-medium text-sm text-brand-text truncate">悬案笔记</h3>
+                    </a>
+                    <a href="#">
+                        <img src="https://placehold.co/300x400/F0F0F0/000000?text=推荐5" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-sm mb-2">
+                        <h3 class="font-medium text-sm text-brand-text truncate">星际迷航者</h3>
+                    </a>
+                    <a href="#">
+                        <img src="https://placehold.co/300x400/F0F0F0/000000?text=推荐6" alt="书封" class="w-full h-40 object-cover rounded-lg shadow-sm mb-2">
+                        <h3 class="font-medium text-sm text-brand-text truncate">她的时光</h3>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 组件2: 列表卡片组件 (替换旧6, 8, 10区 - VIP强推/霸王票) -->
+            <section class="py-4 mt-4">
+                <div class="bg-white rounded-lg shadow-sm mx-4 p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-brand-text">VIP强推</h2>
+                        <a href="#" class="text-sm font-medium text-brand-accent">查看更多 &gt;</a>
+                    </div>
+                    <div class="space-y-4">
+                        <!-- 列表项 (左图右文) -->
+                        <a href="#" class="flex items-center space-x-3">
+                            <img src="https://placehold.co/200x200/EEEEEE/999999?text=强推1" alt="小书封" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-brand-text truncate">一本非常好看的书</h3>
+                                <p class="text-sm text-brand-secondary truncate">超级有名的作者</p>
+                                <p class="text-sm text-brand-secondary truncate mt-1">简介：这是一个关于勇气和梦想的奇妙故事...</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3">
+                            <img src="https://placehold.co/200x200/EEEEEE/999999?text=强推2" alt="小书封" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-brand-text truncate">第二本强推的书</h3>
+                                <p class="text-sm text-brand-secondary truncate">作家B</p>
+                                <p class="text-sm text-brand-secondary truncate mt-1">简介：在古老的传说中，隐藏着改变世界的力量。</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3">
+                            <img src="https://placehold.co/200x200/EEEEEE/999999?text=强推3" alt="小书封" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-brand-text truncate">霸王票日榜第一</h3>
+                                <p class="text-sm text-brand-secondary truncate">作家C</p>
+                                <p class="text-sm text-brand-secondary truncate mt-1">简介：他从一无所有，到执掌星辰。</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 组件4: 特色分类组件 (替换旧9区 - 分类推荐) -->
+            <section class="py-4 mt-4">
+                <div class="bg-white rounded-lg shadow-sm mx-4 p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-brand-text">热门分类：言情</h2>
+                        <a href="#" class="text-sm font-medium text-brand-accent">查看更多 &gt;</a>
+                    </div>
+                    
+                    <!-- Top 1 (重点展示) -->
+                    <a href="#" class="flex space-x-4 mb-4 pb-4 border-b border-gray-100">
+                        <img src="https://placehold.co/300x400/FFD1DC/B33A3A?text=言情Top1" alt="大书封" class="w-24 h-32 object-cover rounded-lg shadow-sm flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-brand-text truncate">倾城之恋</h3>
+                            <p class="text-sm text-brand-secondary mt-1">作者：张爱玲 (示例)</p>
+                            <p class="text-sm text-brand-secondary mt-2 line-clamp-3">这是一个发生在战火纷飞年代的爱情故事，探讨了爱情与现实的纠葛...</p>
+                        </div>
+                    </a>
+                    
+                    <!-- Top 2-4 (列表) -->
+                    <div class="space-y-2">
+                        <a href="#" class="flex items-center space-x-2">
+                            <span class="font-bold text-brand-secondary text-lg">2</span>
+                            <span class="text-brand-text truncate">何以笙箫默</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2">
+                            <span class="font-bold text-brand-secondary text-lg">3</span>
+                            <span class="text-brand-text truncate">三生三世十里桃花</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2">
+                            <span class="font-bold text-brand-secondary text-lg">4</span>
+                            <span class="text-brand-text truncate">亲爱的，热爱的</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 组件2 (变体): 列表卡片组件 (替换旧12区 - 一周新文) -->
+            <section class="py-4 mt-4">
+                <div class="bg-white rounded-lg shadow-sm mx-4 p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-brand-text">一周新文</h2>
+                        <!-- 增加了 "换一换" 按钮 -->
+                        <a href="#" class="text-sm font-medium text-brand-accent flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m-15.357-2a8.001 8.001 0 0015.357 2m0 0H15"></path></svg>
+                            <span>换一换</span>
+                        </a>
+                    </div>
+                    <div class="space-y-4">
+                        <!-- 列表项 -->
+                        <a href="#" class="flex items-center space-x-3">
+                            <img src="https://placehold.co/200x200/E6F7FF/0056B3?text=新文1" alt="小书封" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-brand-text truncate">新时代的序章</h3>
+                                <p class="text-sm text-brand-secondary truncate">新晋作者</p>
+                                <p class="text-sm text-brand-secondary truncate mt-1">简介：全新的世界观，不一样的冒险。</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3">
+                            <img src="https://placehold.co/200x200/E6F7FF/0056B3?text=新文2" alt="小书封" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-brand-text truncate">隔壁的侦探</h3>
+                                <p class="text-sm text-brand-secondary truncate">推理小说家</p>
+                                <p class="text-sm text-brand-secondary truncate mt-1">简介：每一扇窗户背后，都可能藏着秘密。</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 
+          应用主导航 (底部)
+          固定在屏幕底部
+        -->
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 grid grid-cols-5 gap-1 py-2 text-center z-10">
+            <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                <!-- Icon: 书架 -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <span class="text-xs font-medium mt-1">书架</span>
+            </a>
+            <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                <!-- Icon: 发现/搜索 -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <span class="text-xs font-medium mt-1">发现</span>
+            </a>
+            <a href="#" class="flex flex-col items-center text-brand-accent"> <!-- 当前选中页面 -->
+                <!-- Icon: 首页/书城 -->
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"></path></svg>
+                <span class="text-xs font-medium mt-1">首页</span>
+            </a>
+            <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                <!-- Icon: 版权 -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h6m-6 4h6m-6 4h6"></path></svg>
+                <span class="text-xs font-medium mt-1">版权</span>
+            </a>
+            <a href="#" class="flex flex-col items-center text-brand-secondary hover:text-brand-accent">
+                <!-- Icon: 我的 -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <span class="text-xs font-medium mt-1">我的</span>
+            </a>
+        </nav>
+
+    </div>
+
+</body>
+</html>
+
