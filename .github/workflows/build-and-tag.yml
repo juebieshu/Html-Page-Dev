@@ -1,0 +1,45 @@
+name: Build & Tag
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - name: Generate version
+        id: ver
+        run: |
+          node gen-version.js >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: npm run make
+
+      - name: Create Tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git tag ${{ steps.ver.outputs.TAG }}
+          git push origin ${{ steps.ver.outputs.TAG }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ steps.ver.outputs.TAG }}
+          path: out/**
