@@ -5,11 +5,15 @@ module.exports = {
   packagerConfig: {
     asar: true,
   },
-  rebuildConfig: {},
+
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        authors: 'Cold ice',
+        description: 'Test',
+        name: 'electron-min'
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -24,13 +28,12 @@ module.exports = {
       config: {},
     },
   ],
+
   plugins: [
     {
       name: '@electron-forge/plugin-auto-unpack-natives',
       config: {},
     },
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
